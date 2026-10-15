@@ -1,0 +1,14 @@
+{
+  "editor": "object-creator",
+  "name": "Object Creator",
+  "shares": [
+    {
+      "type": "object-glb",
+      "format": "glb",
+      "location": "exportable from app",
+      "note": "Placeable GLB objects"
+    }
+  ],
+  "consumes": [],
+  "npcManifest": "https://raw.githubusercontent.com/Kmberry1989/selsocsoc/main/assets/npc/manifest.json"
+}
