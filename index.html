@@ -437,12 +437,19 @@
   function triUVsFor(tr){var s=tr.part.textureScale||1,ln=localTriNormal(tr.lp);return[triUV(tr.lp[0],ln,s),triUV(tr.lp[1],ln,s),triUV(tr.lp[2],ln,s)]}
   function drawTexturedTri(img,uv,pts,alpha){var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;if(!w||!h)return false;var u1=uv[0][0]*w,v1=uv[0][1]*h,u2=uv[1][0]*w,v2=uv[1][1]*h,u3=uv[2][0]*w,v3=uv[2][1]*h,du1=u2-u1,dv1=v2-v1,du2=u3-u1,dv2=v3-v1,det=du1*dv2-du2*dv1;if(Math.abs(det)<1e-9)return false;var dx1=pts[1].x-pts[0].x,dy1=pts[1].y-pts[0].y,dx2=pts[2].x-pts[0].x,dy2=pts[2].y-pts[0].y,a=(dx1*dv2-dx2*dv1)/det,b=(dy1*dv2-dy2*dv1)/det,c=(dx2*du1-dx1*du2)/det,d=(dy2*du1-dy1*du2)/det,e=pts[0].x-a*u1-c*v1,f=pts[0].y-b*u1-d*v1;if(!isFinite(a+b+c+d+e+f))return false;var tu0=Math.floor(Math.min(u1,u2,u3)/w),tu1=Math.ceil(Math.max(u1,u2,u3)/w),tv0=Math.floor(Math.min(v1,v2,v3)/h),tv1=Math.ceil(Math.max(v1,v2,v3)/h);if(tu1-tu0>8||tv1-tv0>8)return false;ctx.save();ctx.clip();ctx.globalAlpha=alpha;ctx.transform(a,b,c,d,e,f);for(var tu=tu0;tu<tu1;tu++)for(var tv=tv0;tv<tv1;tv++)ctx.drawImage(img,tu*w,tv*h);ctx.restore();return true}
   function faceColor(part,group){return part.faceColors&&part.faceColors[group]||part.color}
+  // Roster unification 2026-10-27: the scale reference now uses the game
+  // roster proportions (capsule body approximated by a cylinder, since
+  // this editor has no capsule primitive; coin head, hands, box feet).
+  // Previously: box body, head at 1.58, wedge feet — neither town figure.
   function avatarParts(){var bx=avatarBaseX;function ap(type,name,color,pos,scale){return{id:'__avatar_'+name,type:type,name:name,color:color,roughness:.85,metalness:0,pos:[pos[0]+bx,pos[1],pos[2]],rot:[0,0,0],scale:scale,visible:true,vertices:null,faceColors:{},texture:'',textureScale:1}}
     return[
-      ap('wedge','footL','#43505C',[-0.17,0.10,0.03],[0.24,0.20,0.44]),
-      ap('wedge','footR','#43505C',[0.17,0.10,0.03],[0.24,0.20,0.44]),
-      ap('box','body','#5B7F99',[0,0.725,0],[0.60,1.05,0.38]),
-      ap('cylinder','head','#D8A878',[0,1.58,0],[0.52,0.10,0.52])
+      ap('box','footL','#43505C',[-0.19,0.15,0.03],[0.25,0.14,0.42]),
+      ap('box','footR','#43505C',[0.19,0.15,0.03],[0.25,0.14,0.42]),
+      ap('cylinder','body','#5B7F99',[0,0.66,0],[0.58,1.12,0.58]),
+      ap('cylinder','shoulders','#5B7F99',[0,0.97,0],[0.54,0.045,0.54]),
+      ap('sphere','handL','#D8A878',[-0.46,0.68,0],[0.26,0.26,0.26]),
+      ap('sphere','handR','#D8A878',[0.46,0.68,0],[0.26,0.26,0.26]),
+      ap('cylinder','head','#D8A878',[0,1.66,0],[0.68,0.15,0.68])
     ];}
   function layoutAvatar(){if(!state.parts.length){avatarBaseX=-1.6;return}var b=bounds(true);avatarBaseX=b.min[0]-0.95;}
   function drawMirrorPlane(w,h){var ax=uiSettings.mirror.axis,S=6,pts;if(ax===0)pts=[[0,0,-S],[0,0,S],[0,3.2,S],[0,3.2,-S]];else if(ax===1)pts=[[-S,0.02,-S],[S,0.02,-S],[S,0.02,S],[-S,0.02,S]];else pts=[[-S,0,0],[S,0,0],[S,3.2,0],[-S,3.2,0]];var p=pts.map(function(q){return project(q,w,h)});ctx.save();ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);for(var i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);ctx.closePath();ctx.fillStyle='rgba(236,91,42,.10)';ctx.fill();ctx.strokeStyle='rgba(236,91,42,.6)';ctx.lineWidth=1.5*dpr;ctx.setLineDash([6*dpr,4*dpr]);ctx.stroke();ctx.setLineDash([]);ctx.restore();}
